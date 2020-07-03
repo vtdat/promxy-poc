@@ -1,0 +1,49 @@
+version: '3.2'
+services:
+  prometheus_1:
+    image: prom/prometheus:latest
+    container_name: prometheus-1
+    ports:
+    - 9090:9090
+    command:
+    - --config.file=/etc/prometheus/prometheus-1.yml
+    volumes: 
+    - ./prometheus-1.yml:/etc/prometheus/prometheus-1.yml
+  prometheus_2:
+    image: prom/prometheus:latest
+    container_name: prometheus-2
+    ports:
+    - 9091:9090
+    command:
+    - --config.file=/etc/prometheus/prometheus-2.yml
+    volumes: 
+    - ./prometheus-2.yml:/etc/prometheus/prometheus-2.yml
+  cadvisor:
+    image: gcr.io/google-containers/cadvisor:latest
+    container_name: cadvisor
+    volumes:
+    - /:/rootfs:ro
+    - /var/run:/var/run:rw
+    - /sys:/sys:ro
+    - /var/lib/docker/:/var/lib/docker:ro
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)'
+  promxy:
+    image: promxy:lab
+    container_name: promxy
+    volumes:
+      - ./config.yml:/etc/promxy/config.yml
+    command:
+      - '--config=/etc/promxy/config.yml'
+    ports:
+      - 8082:8082

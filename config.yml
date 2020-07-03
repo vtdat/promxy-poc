@@ -1,0 +1,24 @@
+##
+## Regular prometheus configuration
+##
+global:
+  evaluation_interval: 5s
+  external_labels:
+    source: promxy
+
+##
+### Promxy configuration
+##
+promxy:
+  server_groups:
+    - static_configs:
+        - targets:
+          - prometheus_1:9090
+      labels:
+        server: prometheus_1
+
+    - static_configs:
+        - targets:
+          - prometheus_2:9090
+      labels:
+        server: prometheus_2
